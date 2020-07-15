@@ -1,0 +1,22 @@
+server:
+  tomcat:
+    uri-encoding: utf-8
+  servlet:
+    session:
+      timeout: 30m
+  port: 8081
+
+spring:
+  application:
+    name: payment
+  datasource:
+    name: video
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/payment
+    username: root
+    password: root
+
+mybatis:
+  typeAliasesPackage: com.entity
+  mapperLocations: classpath:mappers/*.xml
+  configLocation: classpath:mybatis-config.xml
