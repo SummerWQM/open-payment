@@ -1,14 +1,10 @@
 package com.dao;
 
-import com.entity.Channel;
+import com.entity.PaymentChannel;
 import org.apache.ibatis.annotations.Mapper;
 
-import java.util.List;
 
 @Mapper
 public interface ChannelDao {
-
-    List<Channel> getChannels();
-
-    Channel getPaymentChannel(String code);
+    PaymentChannel getPaymentChannel(String code);
 }

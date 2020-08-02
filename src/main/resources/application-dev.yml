@@ -12,11 +12,11 @@ spring:
   datasource:
     name: payment
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/payment?useUnicode=true&characterEncoding=UTF-8
+    url: jdbc:mysql://localhost:3306/payment
     username: root
     password: root
   profiles:
-    active: prod
+    active: dev
 
 mybatis:
   typeAliasesPackage: com.entity

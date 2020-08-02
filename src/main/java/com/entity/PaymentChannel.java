@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 
 import java.util.Map;
 
-public class Channel {
+public class PaymentChannel {
 
 
     public String getCode() {

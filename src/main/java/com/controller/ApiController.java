@@ -1,68 +1,64 @@
 package com.controller;
 
 import com.common.api.CommonResult;
-import com.entity.Channel;
-import com.job.HttpSenderRunnable;
-import com.services.ChannelService;
+import com.entity.PaymentChannel;
+import com.entity.PaymentTransaction;
+import com.services.PaymentService;
+import com.services.impl.payments.IPayment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
+import javax.servlet.http.HttpServletResponse;
+import java.io.PrintWriter;
+import java.util.Map;
+import java.util.UUID;
 
 @RestController
+@RequestMapping("/api")
 public class ApiController {
 
     @Autowired
-    private ChannelService channelService;
+    PaymentService paymentService;
 
-    @RequestMapping(method = RequestMethod.GET, value = "/api/value")
-    public CommonResult<Object> getPayUrl() {
+    @RequestMapping(method = RequestMethod.GET, value = "/set")
+    public CommonResult<Object> createTransaction() {
 
-        List<Channel> re = channelService.getChannels();
+        PaymentTransaction paymentTransaction = new PaymentTransaction();
+        paymentTransaction.setUnid(UUID.randomUUID().toString().replace("-", "").toLowerCase());
+        paymentTransaction.setAmount(100);
+        paymentTransaction.setStatus(PaymentTransaction.STATUS_NEW);
+        paymentTransaction.setTransactionName("测试交易数据");
+        paymentTransaction.setCreator(1);
+        paymentTransaction.setCallbackUrl("http://example.com");
+        paymentTransaction.setFromSystem("ORDER_SYSTEM");
+        int count = paymentService.createTransaction(paymentTransaction);
 
-        return CommonResult.success(re);
+        return CommonResult.success(count);
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/api")
-    public CommonResult<Object> result(HttpServletRequest request) {
 
-        return CommonResult.success(request.getRemoteAddr());
-    }
+    @RequestMapping(method = RequestMethod.GET, value = "/pay/{unid}/{channel}")
+    public CommonResult<Object> getPay(HttpServletResponse response, @PathVariable String unid, @PathVariable String channel) throws Exception {
 
-    @RequestMapping(method = RequestMethod.GET, value = "/api/notify/{channel:[a-z0-9_]+}")
-    public String Notify(@PathVariable String channel) {
+        PaymentTransaction paymentTransaction = paymentService.getPaymentTransaction(unid);
 
-        return channel;
-    }
+        if (paymentTransaction == null) {
+            return CommonResult.failed("未找到交易");
+        }
+        PaymentChannel paymentChannel = paymentService.getPaymentChannel(channel);
 
-    public void run() throws URISyntaxException, InterruptedException {
-        System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
-        System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true");
-        System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient", "stdout");
-
-        HashMap<Integer, Thread> map = new HashMap<>();
-        final CountDownLatch cdl = new CountDownLatch(1000);
-        for (int i = 0; i < 1500; i++) {
-
-
-            Thread sender = new Thread(new HttpSenderRunnable());
-            sender.setName("线程:" + i);
-            map.put(i, sender);
+        if (paymentChannel == null) {
+            return CommonResult.failed("不支持的交易类型");
         }
 
+        IPayment ipay = paymentService.getPay(paymentTransaction, paymentChannel);
 
-        for (Object key : map.keySet()) {
-            Thread thread = map.get(key);
-            thread.start();
+        Map<String, String> pay = ipay.pay(paymentTransaction, paymentChannel);
 
-        }
-
-        cdl.await();
+        return CommonResult.success(pay);
 
     }
+
 
 }
