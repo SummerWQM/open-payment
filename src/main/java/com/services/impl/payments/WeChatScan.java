@@ -66,7 +66,7 @@ public class WeChatScan implements IPayment {
     }
 
     @Override
-    public String getReturnData(RequestContext requestContext) {
+    public String getReturnData(HttpServletRequest request) {
         return null;
     }
 
