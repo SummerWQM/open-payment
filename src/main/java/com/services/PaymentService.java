@@ -14,4 +14,6 @@ public interface PaymentService {
 
     IPayment getPay(PaymentTransaction paymentTransaction, PaymentChannel paymentChannel) throws Exception;
 
+    IPayment getPay(String channelCode);
+
 }

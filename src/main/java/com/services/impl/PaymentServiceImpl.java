@@ -44,10 +44,20 @@ public class PaymentServiceImpl implements PaymentService {
 
 
     public IPayment getPay(PaymentTransaction paymentTransaction, PaymentChannel paymentChannel) throws Exception {
+
         if (WeChatScan.NAME.equals(paymentChannel.getCode())) {
             return weChatScan;
         }
         throw new Exception("not found pay method");
     }
+
+    @Override
+    public IPayment getPay(String channelCode) {
+        if (WeChatScan.NAME.equals(channelCode)) {
+            return weChatScan;
+        }
+        return null;
+    }
+
 
 }
