@@ -23,10 +23,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service
 public class WeChatScan implements IPayment {
@@ -53,6 +54,8 @@ public class WeChatScan implements IPayment {
 
         requestMap.put("sign", sign(requestMap, (String) channel.getParams().get("md5_key")));
 
+        System.out.println(JSON.toJSONString(requestMap));
+
         String xml = Helper.mapToXml(requestMap);
 
         String result = HttpSender.requestPost((String) channel.getParams().get("order_gateway"), xml);
@@ -72,7 +75,6 @@ public class WeChatScan implements IPayment {
             return map;
         }
         map.put("code", re.get("result_code"));
-
         return map;
 
     }
@@ -88,11 +90,32 @@ public class WeChatScan implements IPayment {
         Map<String, String> re = Helper.xmlToMap(message);
         paymentTransactionResult.setPaymentTransactionUnid(re.get("out_trade_no"));
 
+        paymentTransactionResult.setFinishAt(re.get("time_end"));
         paymentTransactionResult.setAmount(Integer.parseInt(re.get("total_fee")));
+        String coupon = re.get("coupon_fee");
+        paymentTransactionResult.setDiscountAmount(Integer.parseInt(coupon == null ? "0" : coupon));
 
-        paymentTransactionResult.setDiscountAmount(Integer.parseInt(re.get("coupon_fee")));
+        String sign = re.get("sign");
+        re.put("sign", "");
 
-        String code = re.get("return_code");
+        // 验证签名
+        String v_sign = sign(re, (String) channel.getParams().get("md5_key"));
+
+        if (!v_sign.equals(sign)) {
+            //throw new Exception("签名验证不通过:" + sign + "---" + v_sign);
+        }
+
+        SimpleDateFormat sim = new SimpleDateFormat("yyyyMMddhhmmss");
+
+        Date date = sim.parse(re.get("time_end"));
+
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
+        String endDate = format.format(date);
+
+        paymentTransactionResult.setFinishAt(endDate);
+
+        String code = re.get("result_code");
 
         if (code.equals("SUCCESS")) {
             paymentTransactionResult.setStatus("success");
@@ -100,15 +123,12 @@ public class WeChatScan implements IPayment {
             paymentTransactionResult.setStatus("failed");
         }
 
-        // 验证签名
-        String v_sign = sign(re, (String) channel.getParams().get("order_gateway"));
-
 
         return paymentTransactionResult;
     }
 
 
-    protected String sign(Map<String, String> hashMap, String md5Key) {
+    protected String sign(final Map<String, String> hashMap, String md5Key) {
 
         Set set = hashMap.keySet();
 
@@ -131,4 +151,20 @@ public class WeChatScan implements IPayment {
         byte[] s = stringBuilder.toString().getBytes();
         return DigestUtils.md5DigestAsHex(s).toUpperCase();
     }
+
+    @Override
+    public void finishNotify(HttpServletResponse response) throws Exception {
+
+        Map<String, String> map = new HashMap<>();
+        map.put("return_code", "'SUCCESS'");
+        map.put("return_msg", "");
+
+        String message = Helper.mapToXml(map);
+
+        PrintWriter printWriter = response.getWriter();
+
+        printWriter.write(message);
+        printWriter.flush();
+    }
+
 }

@@ -5,11 +5,13 @@ import com.controller.vo.TransactionVo;
 import com.entity.PaymentChannel;
 import com.entity.PaymentTransaction;
 import com.services.impl.payments.IPayment;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/api")
@@ -40,6 +42,7 @@ public class ApiController extends BaseController {
         if (paymentTransaction == null) {
             return CommonResult.failed("未找到交易");
         }
+
         PaymentChannel paymentChannel = paymentService.getPaymentChannel(channel);
 
         if (paymentChannel == null) {

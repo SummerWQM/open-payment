@@ -73,11 +73,11 @@ public class PaymentTransaction {
         this.callbackUrl = callbackUrl;
     }
 
-    public byte getNotifyCount() {
+    public int getNotifyCount() {
         return notifyCount;
     }
 
-    public void setNotifyCount(byte notifyCount) {
+    public void setNotifyCount(int notifyCount) {
         this.notifyCount = notifyCount;
     }
 
@@ -99,7 +99,7 @@ public class PaymentTransaction {
 
     private String callbackUrl;
 
-    private byte notifyCount;
+    private int notifyCount;
 
     private String createdAt;
 

@@ -54,6 +54,12 @@
             <version>1.18.4</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.sproutsocial</groupId>
+            <artifactId>nsq-j</artifactId>
+            <version>1.0</version>
+        </dependency>
+
     </dependencies>
 
     <build>

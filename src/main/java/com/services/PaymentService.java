@@ -2,11 +2,12 @@ package com.services;
 
 import com.entity.PaymentChannel;
 import com.entity.PaymentTransaction;
+import com.entity.PaymentTransactionResult;
 import com.services.impl.payments.IPayment;
 
 public interface PaymentService {
 
-    int createTransaction(PaymentTransaction paymentTransaction);
+    void createTransaction(PaymentTransaction paymentTransaction);
 
     PaymentTransaction getPaymentTransaction(String unid);
 
@@ -16,4 +17,12 @@ public interface PaymentService {
 
     IPayment getPay(String channelCode);
 
+    void createTransactionResult(PaymentTransactionResult paymentTransactionResult);
+
+    PaymentTransactionResult getPaymentTransactionResult(String unid);
+
+
+    void modifyTransaction(PaymentTransaction paymentTransaction);
+
+    int modifyTransactionResult(PaymentTransactionResult paymentTransactionResult);
 }

@@ -5,6 +5,7 @@ import com.entity.PaymentTransaction;
 import com.entity.PaymentTransactionResult;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 public interface IPayment {
@@ -13,4 +14,5 @@ public interface IPayment {
 
     PaymentTransactionResult parsePayNotify(final Object object, PaymentChannel channel) throws Exception;
 
+    void finishNotify(HttpServletResponse response) throws Exception;
 }

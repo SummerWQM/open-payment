@@ -5,6 +5,7 @@ import com.dao.TransactionDao;
 import com.dao.TransactionResultDao;
 import com.entity.PaymentChannel;
 import com.entity.PaymentTransaction;
+import com.entity.PaymentTransactionResult;
 import com.services.PaymentService;
 import com.services.impl.payments.IPayment;
 import com.services.impl.payments.WeChatScan;
@@ -25,11 +26,30 @@ public class PaymentServiceImpl implements PaymentService {
     @Autowired
     protected TransactionResultDao transactionResultDao;
 
+
     @Autowired
     protected WeChatScan weChatScan;
 
-    public int createTransaction(PaymentTransaction paymentTransaction) {
-        return transactionDao.insert(paymentTransaction);
+    public void createTransaction(PaymentTransaction paymentTransaction) {
+        transactionDao.insert(paymentTransaction);
+    }
+
+    public void createTransactionResult(PaymentTransactionResult paymentTransactionResult) {
+        transactionResultDao.insert(paymentTransactionResult);
+    }
+
+    @Override
+    public PaymentTransactionResult getPaymentTransactionResult(String unid) {
+        return transactionResultDao.getPaymentTransactionResult(unid);
+    }
+
+    public void modifyTransaction(PaymentTransaction paymentTransaction) {
+        transactionDao.modifyTransaction(paymentTransaction);
+    }
+
+    @Override
+    public int modifyTransactionResult(PaymentTransactionResult paymentTransactionResult) {
+        return transactionResultDao.modifyTransactionResult(paymentTransactionResult);
     }
 
     @Override
@@ -58,6 +78,5 @@ public class PaymentServiceImpl implements PaymentService {
         }
         return null;
     }
-
 
 }

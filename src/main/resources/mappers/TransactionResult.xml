@@ -11,17 +11,19 @@
     `status`,
     `finish_at`,
     `message_info`)
-    values (#{paymentTransactionUnid},#{amount},#{discountAmount},#{amount},#{status},#{finishAt},#{messageInfo})
+    values (#{paymentTransactionUnid},#{amount},#{discountAmount},#{status},#{finishAt},#{messageInfo})
 </insert>
-
+    <select id="getPaymentTransactionResult" resultType="com.entity.PaymentTransactionResult">
+        select * from `payment_transaction_result` where payment_transaction_unid = #{unid}
+    </select>
     <update id="modifyTransactionResult">
 
-        update payment_transaction
+        update payment_transaction_result
 
         <set>
             <if test="notifyCount!=null">notify_count=#{notifyCount}</if>
-            <if test="status!=null">notify_count=#{status}</if>
+            <if test="status!=null">status=#{status}</if>
         </set>
-        where id=#{id}
+        where payment_transaction_unid=#{id}
     </update>
 </mapper>
