@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class EventManager {
 
+    public final static String PAYMENT_TOPIC = "PAYMENT";
+
     @Autowired
     PublisherConfig publisherConfig;
 

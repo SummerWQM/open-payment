@@ -49,6 +49,7 @@ public class WeChatScan implements IPayment {
         requestMap.put("out_trade_no", transaction.getUnid());
         requestMap.put("total_fee", "" + transaction.getAmount());
         requestMap.put("spbill_create_ip", request.getRemoteAddr());
+        //http://127.0.0.1:8081/pay/notify-wechatscan
         requestMap.put("notify_url", (String) channel.getParams().get("notify_url"));
         requestMap.put("trade_type", "NATIVE");
 
@@ -84,18 +85,20 @@ public class WeChatScan implements IPayment {
     public PaymentTransactionResult parsePayNotify(final Object object, PaymentChannel channel) throws Exception {
 
         final String message = (String) object;
+
         PaymentTransactionResult paymentTransactionResult = new PaymentTransactionResult();
+
         paymentTransactionResult.setMessageInfo(message);
 
         Map<String, String> re = Helper.xmlToMap(message);
-        paymentTransactionResult.setPaymentTransactionUnid(re.get("out_trade_no"));
 
-        paymentTransactionResult.setFinishAt(re.get("time_end"));
+        paymentTransactionResult.setPaymentTransactionUnid(re.get("out_trade_no"));
         paymentTransactionResult.setAmount(Integer.parseInt(re.get("total_fee")));
         String coupon = re.get("coupon_fee");
         paymentTransactionResult.setDiscountAmount(Integer.parseInt(coupon == null ? "0" : coupon));
 
         String sign = re.get("sign");
+
         re.put("sign", "");
 
         // 验证签名

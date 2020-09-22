@@ -9,8 +9,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 public interface IPayment {
-    Map<String, String> pay(PaymentTransaction pay, PaymentChannel channel, HttpServletRequest request) throws Exception;
 
+    Map<String, String> pay(PaymentTransaction pay, PaymentChannel channel, HttpServletRequest request) throws Exception;
 
     PaymentTransactionResult parsePayNotify(final Object object, PaymentChannel channel) throws Exception;
 

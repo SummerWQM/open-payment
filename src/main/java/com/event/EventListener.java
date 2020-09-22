@@ -14,9 +14,10 @@ import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 
-@Component
-@Order(value = 3)
+
 public class EventListener implements ApplicationRunner {
+
+    private static final String CHANNEL = "payment-test-channel";
 
     @Autowired
     PublisherConfig publisherConfig;
@@ -25,7 +26,7 @@ public class EventListener implements ApplicationRunner {
     public void run() throws Exception {
         System.out.println("********** NSQ *************");
         Subscriber subscriber = new Subscriber(publisherConfig.getNsqdLookup1(), publisherConfig.getNsqdLookup2());
-        subscriber.subscribe("PAYMENT", "payment-test-channel", EventListener::handleEvent);
+        subscriber.subscribe(EventManager.PAYMENT_TOPIC, CHANNEL, EventListener::handleEvent);
         System.out.println("********** NSQ SUBSCRIBE *************");
     }
 
@@ -33,10 +34,13 @@ public class EventListener implements ApplicationRunner {
     private static void handleEvent(Message msg) {
         try {
             byte[] data = msg.getData();
-            System.out.println("JACK)))))))");
+
             String s = new String(data, StandardCharsets.UTF_8);
+
             System.out.println(s);
+
             msg.finish();
+
         } catch (Exception e) {
             msg.requeue();
         }

@@ -1,44 +1,41 @@
 package com.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.common.api.CommonResult;
 import com.entity.PaymentChannel;
 import com.entity.PaymentTransaction;
 import com.entity.PaymentTransactionResult;
-import com.google.gson.annotations.JsonAdapter;
-import com.services.PaymentService;
+import com.event.EventManager;
 import com.services.impl.payments.IPayment;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
+import java.nio.charset.StandardCharsets;
 
 @RestController
 @RequestMapping("/pay")
 public class WeChartController extends BaseController {
 
+    /**
+     * 微信支付 异步通知
+     *
+     * @param bytes
+     * @param channel
+     * @param response
+     * @throws Exception
+     */
     @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT}, value = "/notify-{channel}")
-    public void Notify(HttpServletRequest request, @PathVariable String channel, HttpServletResponse response) throws Exception {
+    @Transactional(rollbackFor = Exception.class)
+    public void Notify(@RequestBody byte[] bytes, @PathVariable String channel, HttpServletResponse response) throws Exception {
+
+        channel = channel.toUpperCase();
 
         IPayment iPay = paymentService.getPay(channel);
 
         PaymentChannel paymentChannel = paymentService.getPaymentChannel(channel);
 
-        BufferedReader reader = request.getReader();
 
-        StringBuilder sb = new StringBuilder();
-
-        String line;
-
-        while ((line = reader.readLine()) != null) {
-            sb.append(line + "\n");
-        }
-
-        PaymentTransactionResult result = iPay.parsePayNotify(sb.toString(), paymentChannel);
+        PaymentTransactionResult result = iPay.parsePayNotify(new String(bytes, StandardCharsets.UTF_8), paymentChannel);
 
         PaymentTransactionResult ori = paymentService.getPaymentTransactionResult(result.getPaymentTransactionUnid());
 
@@ -52,13 +49,14 @@ public class WeChartController extends BaseController {
         PaymentTransaction paymentTransaction = paymentService.getPaymentTransaction(result.getPaymentTransactionUnid());
 
         paymentTransaction.setStatus(result.getStatus());
-        paymentTransaction.setNotifyCount(paymentTransaction.getNotifyCount() + 1);
 
         paymentService.modifyTransaction(paymentTransaction);
 
         iPay.finishNotify(response);
 
-        eventManager.sendMessage(JSON.toJSONString(paymentTransaction), "PAYMENT");
+        eventManager.sendMessage(JSON.toJSONString(paymentTransaction), EventManager.PAYMENT_TOPIC);
 
     }
+
+
 }

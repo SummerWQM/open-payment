@@ -17,4 +17,6 @@ public class BaseController {
 
     @Autowired
     RedisTemplate redisTemplate;
+
+
 }

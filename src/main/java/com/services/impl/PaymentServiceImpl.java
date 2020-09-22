@@ -31,7 +31,7 @@ public class PaymentServiceImpl implements PaymentService {
     protected WeChatScan weChatScan;
 
     public void createTransaction(PaymentTransaction paymentTransaction) {
-        transactionDao.insert(paymentTransaction);
+        transactionDao.save(paymentTransaction);
     }
 
     public void createTransactionResult(PaymentTransactionResult paymentTransactionResult) {
