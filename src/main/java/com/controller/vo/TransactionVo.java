@@ -1,5 +1,6 @@
 package com.controller.vo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
@@ -13,5 +14,6 @@ public class TransactionVo {
 
     private String callbackUrl;
 
-    private String fromSystem;//order systme
+    @JsonProperty("from_system")
+    private String fromSystem;
 }

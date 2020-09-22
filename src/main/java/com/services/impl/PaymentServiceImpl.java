@@ -1,5 +1,7 @@
 package com.services.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.dao.ChannelDao;
 import com.dao.TransactionDao;
 import com.dao.TransactionResultDao;
@@ -31,7 +33,7 @@ public class PaymentServiceImpl implements PaymentService {
     protected WeChatScan weChatScan;
 
     public void createTransaction(PaymentTransaction paymentTransaction) {
-        transactionDao.save(paymentTransaction);
+        transactionDao.insert(paymentTransaction);
     }
 
     public void createTransactionResult(PaymentTransactionResult paymentTransactionResult) {
@@ -44,7 +46,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     public void modifyTransaction(PaymentTransaction paymentTransaction) {
-        transactionDao.modifyTransaction(paymentTransaction);
+        //transactionDao.modifyTransaction(paymentTransaction);
     }
 
     @Override
@@ -54,7 +56,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public PaymentTransaction getPaymentTransaction(String unid) {
-        return transactionDao.getTransaction(unid);
+        return transactionDao.selectOne(new QueryWrapper<PaymentTransaction>().eq("unid", unid));
     }
 
     @Override

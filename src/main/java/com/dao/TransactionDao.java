@@ -1,15 +1,8 @@
 package com.dao;
 
-
-import com.baomidou.mybatisplus.extension.service.IService;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.entity.PaymentTransaction;
-import org.apache.ibatis.annotations.Mapper;
 
-public interface TransactionDao extends IService<PaymentTransaction> {
-
-    PaymentTransaction getTransaction(String unid);
-
-    int modifyTransaction(PaymentTransaction paymentTransaction);
-
+public interface TransactionDao extends BaseMapper<PaymentTransaction> {
 
 }

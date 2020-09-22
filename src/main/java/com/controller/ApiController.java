@@ -33,10 +33,8 @@ public class ApiController extends BaseController {
         paymentTransaction.setAmount(transactionVo.getAmount());
         paymentTransaction.setStatus(PaymentTransaction.STATUS_NEW);
         paymentTransaction.setTransactionName(transactionVo.getTransactionName());
-        paymentTransaction.setCreator(transactionVo.getCreator());
         paymentTransaction.setCallbackUrl(transactionVo.getCallbackUrl());
         paymentTransaction.setFromSystem(transactionVo.getFromSystem());
-
         paymentService.createTransaction(paymentTransaction);
 
         return CommonResult.success(paymentTransaction.getUnid());
@@ -79,8 +77,8 @@ public class ApiController extends BaseController {
 
     }
 
-    public void T() {
-
-
+    @GetMapping("/trans")
+    public CommonResult<Object> T() {
+        return CommonResult.success(paymentService.getPaymentTransaction("b7883e7c796e4223ab6ea3890cc844e3"));
     }
 }
