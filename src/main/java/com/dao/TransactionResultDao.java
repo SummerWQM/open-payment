@@ -1,11 +1,9 @@
 package com.dao;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.entity.PaymentTransactionResult;
-import org.apache.ibatis.annotations.Mapper;
 
-@Mapper
-
-public interface TransactionResultDao {
+public interface TransactionResultDao extends BaseMapper<PaymentTransactionResult> {
 
     int insert(PaymentTransactionResult paymentTransactionResult);
 
